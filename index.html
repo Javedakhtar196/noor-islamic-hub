@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Noor Islamic Hub</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, "Noto Nastaliq Urdu", sans-serif;
+    }
+
+    body {
+      background: #f4f8f5;
+      color: #17352b;
+      line-height: 1.8;
+      transition: 0.3s;
+    }
+
+    header {
+      background: linear-gradient(135deg, #075e54, #128c7e);
+      color: white;
+      padding: 28px 18px;
+      text-align: center;
+      border-radius: 0 0 30px 30px;
+    }
+
+    header h1 {
+      font-size: 32px;
+      margin-bottom: 5px;
+    }
+
+    header p {
+      font-size: 16px;
+      opacity: 0.95;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    button {
+      border: none;
+      padding: 10px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      background: white;
+      color: #075e54;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 15px;
+      background: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    nav button {
+      background: #e8f5ef;
+      color: #075e54;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 35px 15px;
+    }
+
+    .hero h2 {
+      color: #075e54;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .date {
+      background: #fff;
+      padding: 12px;
+      border-radius: 15px;
+      margin: 15px auto;
+      max-width: 500px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+      border-right: 4px solid #128c7e;
+    }
+
+    .card h3 {
+      color: #075e54;
+      margin-bottom: 10px;
+    }
+
+    .arabic {
+      font-size: 24px;
+      text-align: center;
+      line-height: 2.1;
+      margin: 15px 0;
+      color: #17352b;
+    }
+
+    .section {
+      display: none;
+      padding: 20px 0;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .app-box {
+      text-align: center;
+      background: linear-gradient(135deg, #075e54, #128c7e);
+      color: white;
+      padding: 30px 20px;
+      border-radius: 25px;
+      margin-top: 20px;
+    }
+
+    .app-box button {
+      margin-top: 15px;
+    }
+
+    footer {
+      margin-top: 35px;
+      background: #063f39;
+      color: white;
+      text-align: center;
+      padding: 25px 15px;
+    }
+
+    /* Dark Mode */
+
+    body.dark {
+      background: #101817;
+      color: #e8f5ef;
+    }
+
+    body.dark nav,
+    body.dark .card,
+    body.dark .date {
+      background: #1b2926;
+      color: #e8f5ef;
+    }
+
+    body.dark nav button {
+      background: #263b36;
+      color: #fff;
+    }
+
+    body.dark .hero h2,
+    body.dark .card h3 {
+      color: #72d6b8;
+    }
+
+    body.dark .arabic {
+      color: #fff;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 26px;
+      }
+
+      .hero h2 {
+        font-size: 23px;
+      }
+
+      .arabic {
+        font-size: 21px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🌙 نور اسلامک ہب</h1>
+  <p>Noor Islamic Hub</p>
+  <p>قرآن • حدیث • دعا • اسلامی معلومات</p>
+
+  <div class="controls">
+    <button onclick="toggleDark()">🌙 ڈارک موڈ</button>
+    <button onclick="changeLanguage()">🌐 English</button>
+  </div>
+</header>
+
+<nav>
+  <button onclick="showSection('home')">🏠 ہوم</button>
+  <button onclick="showSection('quran')">📖 قرآن</button>
+  <button onclick="showSection('hadith')">📜 حدیث</button>
+  <button onclick="showSection('dua')">🤲 دعائیں</button>
+  <button onclick="showSection('apps')">📱 ایپس</button>
+  <button onclick="showSection('about')">ℹ️ ہمارے بارے میں</button>
+</nav>
+
+<main class="container">
+
+  <!-- HOME -->
+
+  <section id="home" class="section active">
+
+    <div class="hero">
+      <h2>السلام علیکم ورحمۃ اللہ وبرکاتہ</h2>
+      <p>
+        نور اسلامک ہب میں خوش آمدید۔
+        یہاں آپ کو روزانہ قرآن، حدیث اور دعاؤں کا خوبصورت مجموعہ ملے گا۔
+      </p>
+
+      <div class="date">
+        📅 آج کی تاریخ: <span id="today"></span>
+      </div>
+    </div>
+
+    <div class="cards">
+
+      <div class="card">
+        <h3>📖 آج کی قرآن کی آیت</h3>
+        <p class="arabic">
+          إِنَّ مَعَ الْعُسْرِ يُسْرًا
+        </p>
+        <p>
+          بے شک مشکل کے ساتھ آسانی ہے۔
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>📜 آج کی حدیث</h3>
+        <p>
+          اعمال کا دار و مدار نیتوں پر ہے۔
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>🤲 آج کی دعا</h3>
+        <p class="arabic">
+          رَبِّ زِدْنِي عِلْمًا
+        </p>
+        <p>
+          اے میرے رب! میرے علم میں اضافہ فرما۔
+        </p>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- QURAN -->
+
+  <section id="quran" class="section">
+
+    <h2>📖 قرآن مجید</h2>
+
+    <div class="card">
+      <p class="arabic">
+        الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ
+      </p>
+
+      <p>
+        سب تعریفیں اللہ ہی کے لیے ہیں جو تمام جہانوں کا رب ہے۔
+      </p>
+    </div>
+
+    <br>
+
+    <div class="card">
+      <p class="arabic">
+        وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ
+      </p>
+
+      <p>
+        اور وہ تمہارے ساتھ ہے جہاں کہیں تم ہو۔
+      </p>
+    </div>
+
+  </section>
+
+  <!-- HADITH -->
+
+  <section id="hadith" class="section">
+
+    <h2>📜 احادیث</h2>
+
+    <div class="card">
+      <h3>نیت کی اہمیت</h3>
+      <p>
+        اعمال کا دار و مدار نیتوں پر ہے۔
+      </p>
+    </div>
+
+    <br>
+
+    <div class="card">
+      <h3>اچھا اخلاق</h3>
+      <p>
+        بہترین انسان وہ ہے جس کے اخلاق سب سے اچھے ہوں۔
+      </p>
+    </div>
+
+  </section>
+
+  <!-- DUA -->
+
+  <section id="dua" class="section">
+
+    <h2>🤲 دعائیں</h2>
+
+    <div class="card">
+      <h3>علم کی دعا</h3>
+
+      <p class="arabic">
+        رَبِّ زِدْنِي عِلْمًا
+      </p>
+
+      <p>
+        اے میرے رب! میرے علم میں اضافہ فرما۔
+      </p>
+    </div>
+
+    <br>
+
+    <div class="card">
+      <h3>دنیا و آخرت کی بھلائی</h3>
+
+      <p class="arabic">
+        رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً
+        وَفِي الْآخِرَةِ حَسَنَةً
+      </p>
+
+      <p>
+        اے ہمارے رب! ہمیں دنیا میں بھی بھلائی عطا فرما
+        اور آخرت میں بھی بھلائی عطا فرما۔
+      </p>
+    </div>
+
+  </section>
+
+  <!-- APPS -->
+
+  <section id="apps" class="section">
+
+    <h2>📱 ہماری ایپس</h2>
+
+    <div class="app-box">
+
+      <h2>🌙 Pi Islamic Daily</h2>
+
+      <p>
+        ایک خوبصورت اسلامی ایپ جس میں روزانہ قرآن،
+        حدیث اور دعائیں حاصل کی جا سکتی ہیں۔
+      </p>
+
+      <button onclick="alert('Pi Islamic Daily کا لنک بعد میں یہاں شامل کیا جائے گا۔')">
+        📱 ایپ دیکھیں
+      </button>
+
+    </div>
+
+  </section>
+
+  <!-- ABOUT -->
+
+  <section id="about" class="section">
+
+    <h2>ℹ️ ہمارے بارے میں</h2>
+
+    <div class="card">
+
+      <p>
+        نور اسلامک ہب ایک اسلامی معلوماتی ویب سائٹ ہے
+        جس کا مقصد قرآن، حدیث، دعاؤں اور مفید اسلامی
+        معلومات کو آسان انداز میں لوگوں تک پہنچانا ہے۔
+      </p>
+
+      <br>
+
+      <p>
+        اللہ تعالیٰ ہمیں دین کی صحیح بات سمجھنے اور
+        دوسروں تک پہنچانے کی توفیق عطا فرمائے۔ آمین۔
+      </p>
+
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  <p>🌙 Noor Islamic Hub</p>
+  <p>اللہ آپ کو خوش رکھے 🤲</p>
+  <p>© 2026 Noor Islamic Hub</p>
+</footer>
+
+<script>
+
+  function showSection(sectionId) {
+
+    const sections = document.querySelectorAll(".section");
+
+    sections.forEach(section => {
+      section.classList.remove("active");
+    });
+
+    document.getElementById(sectionId).classList.add("active");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+
+  function toggleDark() {
+    document.body.classList.toggle("dark");
+  }
+
+  function changeLanguage() {
+
+    alert(
+      "English version ہم اگلے مرحلے میں مکمل شامل کریں گے۔"
+    );
+
+  }
+
+  const date = new Date();
+
+  document.getElementById("today").innerText =
+    date.toLocaleDateString("ur-PK");
+
+</script>
+
+</body>
+  </html>
