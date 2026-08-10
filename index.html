@@ -780,10 +780,12 @@ document.addEventListener('DOMContentLoaded',async()=>{
  await loadHijriToday();
  await loadDailyAyah();
  await loadSurahs();
-
- // Do not automatically call prayer API on startup.
- // User can press "اوقات حاصل کریں" after confirming city/country.
- document.getElementById('locationStatus').textContent='شہر اور ملک درست ہوں تو "اوقات حاصل کریں" دبائیں۔';
+await loadHijriToday();
+await loadDailyAyah();
+await loadSurahs();
+ 
+ 
+ 
 });
 </script>
 </body>
