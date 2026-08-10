@@ -726,22 +726,50 @@ async function loadPrayer(){
   document.getElementById('locationStatus').textContent=`مقام: ${city}, ${country}`;
  }catch(e){document.getElementById('locationStatus').textContent='اوقات نہیں مل سکے۔ شہر/ملک درست لکھیں۔'}
 }
-
 function useMyLocation(forQibla=false){
- if(!navigator.geolocation){alert('آپ کے براؤزر میں location support دستیاب نہیں۔');return}
- navigator.geolocation.getCurrentPosition(async p=>{
-  currentLat=p.coords.latitude; currentLon=p.coords.longitude;
-  const q=calcQibla(currentLat,currentLon);
-  document.getElementById('qiblaDegree').textContent=`قبلہ: ${q.toFixed(1)}° true north سے`;
-  document.getElementById('qiblaArrow').style.transform=`rotate(${q}deg)`;
-  document.getElementById('qiblaText').textContent='یہ آپ کے مقام سے خانہ کعبہ کی ابتدائی سمت (bearing) ہے۔';
-  if(forQibla)show('qibla');
-  try{
-   const r=await api(`${AAPI}/timings/${Math.round(new Date().getTime()/1000)}?latitude=${currentLat}&longitude=${currentLon}&method=1`);
-  }catch(e){}
- },()=>alert('Location اجازت نہیں ملی۔ براہ کرم browser میں Location اجازت دیں۔'),{enableHighAccuracy:true,timeout:15000});
+  if(!navigator.geolocation){
+    alert('آپ کے براؤزر میں Location support دستیاب نہیں۔');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function(p){
+      currentLat = p.coords.latitude;
+      currentLon = p.coords.longitude;
+
+      const q = calcQibla(currentLat, currentLon);
+
+      document.getElementById('qiblaDegree').textContent =
+        `قبلہ: ${q.toFixed(1)}° true north سے`;
+
+      document.getElementById('qiblaArrow').style.transform =
+        `rotate(${q}deg)`;
+
+      document.getElementById('qiblaText').textContent =
+        'یہ آپ کے مقام سے خانہ کعبہ کی ابتدائی سمت (bearing) ہے۔';
+
+      if(forQibla){
+        show('qibla');
+      }
+
+      document.getElementById('locationStatus').textContent =
+        'آپ کی جگہ حاصل ہوگئی۔ قبلہ کی سمت معلوم کر دی گئی ہے۔';
+    },
+
+    function(error){
+      alert('Location کی اجازت نہیں ملی۔ براہِ کرم Location کی اجازت دیں۔');
+      document.getElementById('locationStatus').textContent =
+        'Location کی اجازت درکار ہے۔';
+    },
+
+    {
+      enableHighAccuracy:true,
+      timeout:15000,
+      maximumAge:60000
+    }
+  );
 }
-function calcQibla(lat,lon){
+func
  const φ1=lat*Math.PI/180, φ2=KAABA.lat*Math.PI/180, dl=(KAABA.lon-lon)*Math.PI/180;
  const y=Math.sin(dl), x=Math.cos(φ1)*Math.tan(φ2)-Math.sin(φ1)*Math.cos(dl);
  return (Math.atan2(y,x)*180/Math.PI+360)%360;
