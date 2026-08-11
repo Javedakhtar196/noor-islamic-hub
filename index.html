@@ -359,456 +359,228 @@ async function loadPrayer(){
   document.getElementById('locationStatus').textContent=`مقام: ${city}, ${country}`;
  }catch(e){document.getElementById('locationStatus').textContent='اوقات نہیں مل سکے۔ شہر/ملک درست لکھیں۔'}
 }
-
-function useMyLocation(forQibla=false){
- if(!navigator.geolocation){alert('آپ کے براؤزر میں location support دستیاب نہیں۔');return}
- navigator.geolocation.getCurrentPosition(async p=>{
-  currentLat=p.coords.latitude; currentLon=p.coords.longitude;
-  const q=calcQibla(currentLat,currentLon);
- <!DOCTYPE html>
-<html lang="ur" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0b5d50">
-<title>Noor Islamic Hub — Version 2.1</title>
-<style>
-:root{
-  --bg:#f4f8f6;--card:#fff;--text:#17352f;--muted:#61736e;--primary:#087f6b;
-  --primary2:#0b5d50;--soft:#e5f3ee;--gold:#d7a93b;--danger:#b64040;--shadow:0 8px 25px rgba(15,70,60,.10);
-}
-*{box-sizing:border-box}html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Nastaliq Urdu","Noto Sans Arabic",sans-serif;line-height:1.8}
-body.dark{--bg:#0d1715;--card:#172420;--text:#edf8f4;--muted:#afc4bd;--soft:#203b34;--shadow:0 8px 25px rgba(0,0,0,.25)}
-header{background:linear-gradient(135deg,#064e44,#0b8b74);color:#fff;padding:30px 16px 25px;text-align:center;border-radius:0 0 32px 32px}
-.logo{font-size:34px;font-weight:800}.tag{opacity:.95}
-.top-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:15px}
-button,select,input{font:inherit}
-button{border:0;border-radius:14px;padding:10px 14px;background:var(--primary);color:#fff;cursor:pointer;font-weight:700}
-button.secondary{background:var(--soft);color:var(--primary2)}
-button.light{background:#fff;color:var(--primary2)}
-button:disabled{opacity:.55;cursor:not-allowed}
-nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);padding:10px;display:flex;gap:7px;justify-content:center;flex-wrap:wrap;box-shadow:0 3px 15px rgba(0,0,0,.08)}
-body.dark nav{background:rgba(23,36,32,.96)}
-nav button{border-radius:999px;padding:9px 13px;background:var(--soft);color:var(--primary2)}
-.container{max-width:1050px;margin:auto;padding:18px}
-.section{display:none}.section.active{display:block}
-.hero{text-align:center;padding:24px 5px}.hero h1{color:var(--primary2);font-size:29px;margin:4px 0}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px}
-.card{background:var(--card);border-radius:22px;padding:20px;box-shadow:var(--shadow);margin:15px 0}
-.card h2,.card h3{color:var(--primary);margin-top:0}
-.arabic{font-family:"Noto Naskh Arabic","Amiri",serif;font-size:26px;line-height:2.2;text-align:right}
-.center{text-align:center}.muted{color:var(--muted)}
-.datebox{background:var(--soft);border-radius:18px;padding:14px;text-align:center;margin:15px 0}
-.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.controls input,.controls select{flex:1;min-width:160px;padding:11px;border:1px solid #b8cbc5;border-radius:12px;background:var(--card);color:var(--text)}
-.surah-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.surah-row select{flex:1}
-.ayah{background:var(--card);border-radius:20px;padding:18px;margin:12px 0;box-shadow:var(--shadow);border-right:4px solid var(--primary)}
-.ayah-no{display:inline-flex;width:34px;height:34px;border-radius:50%;background:var(--soft);color:var(--primary2);align-items:center;justify-content:center;font-weight:800;margin-left:7px}
-.translation{margin-top:10px;color:var(--muted);font-size:17px}
-.action-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
-.prayer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
-.prayer{background:var(--soft);padding:14px;border-radius:18px;text-align:center}.prayer strong{display:block;color:var(--primary2);font-size:20px}
-.qibla-circle{width:260px;height:260px;border-radius:50%;border:10px solid var(--soft);margin:20px auto;display:flex;align-items:center;justify-content:center;position:relative;background:var(--card);box-shadow:var(--shadow)}
-.qibla-arrow{font-size:90px;transform-origin:50% 55%;transition:transform .4s}
-.deg{font-size:22px;font-weight:800;color:var(--primary)}
-.calendar{overflow:auto}.calendar table{width:100%;border-collapse:collapse}.calendar th,.calendar td{padding:9px;border-bottom:1px solid #ccd8d4;text-align:center;white-space:nowrap}
-.ramadan-banner{background:linear-gradient(135deg,#0b5d50,#176e5f);color:#fff;border-radius:24px;padding:25px;text-align:center}
-.notice{padding:12px 14px;border-radius:14px;background:#fff6db;color:#6e5510;margin:10px 0}
-body.dark .notice{background:#3b3218;color:#ffeaa2}
-footer{background:#06463f;color:#fff;text-align:center;padding:28px 15px;margin-top:30px}
-.small{font-size:13px}.hidden{display:none}
-@media(max-width:600px){.logo{font-size:29px}.arabic{font-size:23px}.container{padding:12px}}
-</style>
-</head>
-<body>
-<header>
-  <div class="logo">🌙 نور اسلامک ہب</div>
-  <div>Noor Islamic Hub — Version 2.1</div>
-  <div class="tag">قرآن • حدیث • دعائیں • نماز • قبلہ • ہجری کیلنڈر • رمضان</div>
-  <div class="top-actions">
-    <button class="light" onclick="toggleDark()">🌙 ڈارک موڈ</button>
-    <button class="light" onclick="toggleDir()">🌐 اردو / English</button>
-    <button class="light" onclick="show('settings')">⚙️ ترتیبات</button>
-  </div>
-</header>
-
-<nav>
-  <button onclick="show('home')">🏠 ہوم</button>
-  <button onclick="show('quran')">📖 قرآن</button>
-  <button onclick="show('prayer')">🕌 نماز</button>
-  <button onclick="show('qibla')">🕋 قبلہ</button>
-  <button onclick="show('calendar')">📅 ہجری</button>
-  <button onclick="show('ramadan')">🌙 رمضان</button>
-  <button onclick="show('duas')">🤲 دعائیں</button>
-  <button onclick="show('apps')">📱 ایپس</button>
-</nav>
-
-<main class="container">
-<section id="home" class="section active">
-  <div class="hero">
-    <h1>السلام علیکم ورحمۃ اللہ وبرکاتہ</h1>
-    <p>نور اسلامک ہب کے Version 2.1 میں ہم قرآن، نماز، قبلہ اور اسلامی کیلنڈر کو ایک جگہ جمع کر رہے ہیں۔</p>
-    <div class="datebox">
-      <div>📅 <b id="gregDate">—</b></div>
-      <div>🌙 <b id="hijriDate">ہجری تاریخ حاصل ہو رہی ہے...</b></div>
-    </div>
-  </div>
-  <div class="grid">
-    <div class="card">
-      <h3>📖 آج کی آیت</h3>
-      <div id="dailyAyah" class="arabic">لوڈ ہو رہی ہے...</div>
-      <div id="dailyAyahRef" class="muted center"></div>
-      <div class="action-row"><button class="secondary" onclick="show('quran')">قرآن کھولیں</button></div>
-    </div>
-    <div class="card">
-      <h3>🕌 آج کے نماز کے اوقات</h3>
-      <div id="homePrayer" class="muted">شہر منتخب کرنے کے بعد اوقات یہاں آئیں گے۔</div>
-      <button class="secondary" onclick="show('prayer')">نماز کے اوقات</button>
-    </div>
-    <div class="card">
-      <h3>🤲 آج کی دعا</h3>
-      <div class="arabic">رَبِّ زِدْنِي عِلْمًا</div>
-      <p>اے میرے رب! میرے علم میں اضافہ فرما۔</p>
-    </div>
-  </div>
-</section>
-
-<section id="quran" class="section">
-  <div class="card">
-    <h2>📖 مکمل قرآن مجید</h2>
-    <p class="muted">114 سورتیں۔ ہر سورت کھولنے پر عربی متن اور اردو/English ترجمہ دکھایا جائے گا۔</p>
-    <div class="surah-row">
-      <select id="surahSelect" onchange="loadSurah(this.value)"><option>سورتیں لوڈ ہو رہی ہیں...</option></select>
-      <button onclick="loadSurah(document.getElementById('surahSelect').value)">کھولیں</button>
-    </div>
-    <div class="controls" style="margin-top:10px">
-      <input id="quranSearch" placeholder="قرآن میں لفظ تلاش کریں...">
-      <button onclick="searchQuran()">🔎 تلاش</button>
-    </div>
-    <div id="quranStatus" class="muted" style="margin-top:10px"></div>
-  </div>
-  <div id="searchResults"></div>
-  <div id="surahInfo"></div>
-  <div id="ayahList"></div>
-</section>
-
-<section id="prayer" class="section">
-  <div class="card">
-    <h2>🕌 نماز کے اوقات</h2>
-    <p class="muted">اپنا شہر اور ملک لکھیں۔ پاکستان کے لیے Karachi calculation method استعمال کیا جا سکتا ہے۔</p>
-    <div class="controls">
-      <input id="city" value="Joharabad" placeholder="City / شہر">
-      <input id="country" value="Pakistan" placeholder="Country / ملک">
-      <select id="method">
-        <option value="1" selected>Karachi — University of Islamic Sciences</option>
-        <option value="3">Muslim World League</option>
-        <option value="2">ISNA</option>
-        <option value="4">Umm Al-Qura, Makkah</option>
-      </select>
-      <button onclick="loadPrayer()">اوقات حاصل کریں</button>
-      <button class="secondary" onclick="useMyLocation()">📍 میری جگہ</button>
-    </div>
-    <div id="locationStatus" class="muted" style="margin-top:8px"></div>
-  </div>
-  <div class="card">
-    <div id="prayerDate" class="center"></div>
-    <div id="prayerGrid" class="prayer-grid"></div>
-    <div class="notice small">نماز کے اوقات calculation method اور مقامی مسجد کے اوقات کے مطابق چند منٹ مختلف ہو سکتے ہیں۔ اہم عبادات کے لیے مقامی معتبر کیلنڈر/مسجد سے بھی تصدیق کریں۔</div>
-  </div>
-</section>
-
-<section id="qibla" class="section">
-  <div class="card center">
-    <h2>🕋 قبلہ فائنڈر</h2>
-    <p class="muted">پہلے اپنی جگہ منتخب کریں۔ ہم مکہ مکرمہ کی سمت کا bearing حساب کریں گے۔</p>
-    <button onclick="useMyLocation(true)">📍 میری جگہ سے قبلہ معلوم کریں</button>
-    <div class="qibla-circle">
-      <div id="qiblaArrow" class="qibla-arrow">🕋</div>
-    </div>
-    <div id="qiblaDegree" class="deg">قبلہ: —°</div>
-    <p id="qiblaText" class="muted"></p>
-    <div class="notice small">یہ سمت جغرافیائی شمال (true north) سے زاویہ ہے۔ فون کے compass sensor کی calibration اور مقامی حالات کی وجہ سے حقیقی سمت میں معمولی فرق ہو سکتا ہے۔</div>
-  </div>
-</section>
-
-<section id="calendar" class="section">
-  <div class="card">
-    <h2>📅 ہجری کیلنڈر</h2>
-    <p class="muted">آج کی عیسوی اور ہجری تاریخ کے ساتھ کسی بھی تاریخ کی تبدیلی بھی دیکھی جا سکتی ہے۔</p>
-    <div class="controls">
-      <input id="convDate" type="date">
-      <button onclick="convertDate()">تاریخ تبدیل کریں</button>
-    </div>
-    <div id="convertedDate" class="datebox" style="margin-top:15px">—</div>
-  </div>
-  <div class="card calendar">
-    <h3>🌙 اسلامی مہینے</h3>
-    <p>محرم، صفر، ربیع الاول، ربیع الثانی، جمادی الاول، جمادی الثانی، رجب، شعبان، رمضان، شوال، ذوالقعدہ، ذوالحجہ</p>
-  </div>
-</section>
-
-<section id="ramadan" class="section">
-  <div class="ramadan-banner">
-    <h2>🌙 رمضان المبارک</h2>
-    <p>سحری، افطار اور رمضان کے دنوں کی معلومات ایک جگہ۔</p>
-    <div id="ramadanSummary">سال اور شہر منتخب کرکے رمضان کیلنڈر حاصل کریں۔</div>
-  </div>
-  <div class="card">
-    <div class="controls">
-      <input id="ramadanCity" value="Joharabad" placeholder="City">
-      <input id="ramadanCountry" value="Pakistan" placeholder="Country">
-      <input id="ramadanYear" type="number" value="2027" min="2020" max="2100">
-      <button onclick="loadRamadan()">🌙 رمضان کیلنڈر</button>
-    </div>
-  </div>
-  <div id="ramadanTable" class="card calendar"></div>
-</section>
-
-<section id="duas" class="section">
-  <div class="card"><h2>🤲 منتخب دعائیں</h2>
-    <div class="grid">
-      <div class="card"><h3>علم</h3><div class="arabic">رَبِّ زِدْنِي عِلْمًا</div><p>اے میرے رب! میرے علم میں اضافہ فرما۔</p><p class="small muted">سورۃ طٰہٰ 20:114</p></div>
-      <div class="card"><h3>دنیا و آخرت</h3><div class="arabic">رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً</div><p>اے ہمارے رب! ہمیں دنیا میں بھلائی اور آخرت میں بھلائی عطا فرما۔</p><p class="small muted">سورۃ البقرۃ 2:201</p></div>
-      <div class="card"><h3>مغفرت</h3><div class="arabic">رَبَّنَا ظَلَمْنَا أَنْفُسَنَا وَإِنْ لَمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ الْخَاسِرِينَ</div><p>اے ہمارے رب! ہم نے اپنی جانوں پر ظلم کیا، اگر تو ہمیں نہ بخشے اور رحم نہ فرمائے تو ہم خسارہ اٹھانے والوں میں ہوں گے۔</p><p class="small muted">سورۃ الاعراف 7:23</p></div>
-      <div class="card"><h3>والدین</h3><div class="arabic">رَبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا</div><p>اے میرے رب! ان دونوں پر رحم فرما جیسے انہوں نے بچپن میں مجھے پالا۔</p><p class="small muted">سورۃ الاسراء 17:24</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="apps" class="section">
-  <div class="card center">
-    <h2>📱 ہماری ایپس</h2>
-    <p>Pi Islamic Daily</p>
-    <p class="muted">آپ کی Pi اسلامی ایپ کا اصل لنک تیار ہونے کے بعد یہاں شامل کیا جائے گا۔</p>
-    <button onclick="alert('Pi Islamic Daily کا لنک اگلے مرحلے میں شامل کیا جائے گا۔')">📱 Pi Islamic Daily</button>
-  </div>
-</section>
-
-<section id="settings" class="section">
-  <div class="card">
-    <h2>⚙️ ترتیبات</h2>
-    <div class="controls">
-      <label>فونٹ سائز <input id="fontSize" type="range" min="16" max="24" value="18" oninput="setFont(this.value)"></label>
-      <button class="secondary" onclick="clearSaved()">محفوظ ترتیبات صاف کریں</button>
-    </div>
-    <p class="muted">زبان، ڈارک موڈ اور فونٹ سائز اسی فون میں محفوظ کیے جا سکتے ہیں۔</p>
-  </div>
-  <div class="card">
-    <h3>📚 ماخذ اور کریڈٹ</h3>
-    <p>قرآن عربی متن کے لیے Al Quran Cloud API کا quran-uthmani edition استعمال کیا جاتا ہے۔ یہ API مکمل قرآن، سورتیں اور search فراہم کرتی ہے۔</p>
-    <p>قرآن کے اصل متن کے لیے Tanzil Project ایک highly verified Unicode source ہے؛ اس کے استعمال کی شرائط کے مطابق متن کو تبدیل نہیں کرنا اور Tanzil کا واضح حوالہ دینا ضروری ہے۔</p>
-    <p>نماز، ہجری تاریخ اور رمضان کے لیے AlAdhan API استعمال کیا جاتا ہے۔</p>
-    <p class="small muted">یہ ویب سائٹ دینی رہنمائی کا متبادل نہیں۔ اہم شرعی مسائل میں مستند عالم/مفتی سے رجوع کریں۔</p>
-  </div>
-</section>
-</main>
-
-<footer>
-  <div>🌙 Noor Islamic Hub</div>
-  <div>اللہ تعالیٰ ہمیں قرآن و سنت پر عمل کرنے کی توفیق دے۔ آمین 🤲</div>
-  <div class="small">© 2026 Noor Islamic Hub</div>
-</footer>
-
-<script>
-const QAPI='https://api.alquran.cloud/v1';
-const AAPI='https://api.aladhan.com/v1';
-const KAABA={lat:21.422487,lon:39.826206};
-let currentLat=null,currentLon=null;
-
-function show(id){
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  const el=document.getElementById(id); if(el) el.classList.add('active');
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function toggleDark(){document.body.classList.toggle('dark');localStorage.setItem('nihDark',document.body.classList.contains('dark'))}
-function toggleDir(){
-  const body=document.body;
-  const en=body.dataset.lang==='en';
-  body.dataset.lang=en?'ur':'en';
-  body.dir=en?'rtl':'ltr';
-  alert(en?'اردو موڈ فعال ہوگیا۔':'English mode is enabled. Full translation of the interface will be expanded in the next update.');
-}
-function setFont(v){document.documentElement.style.setProperty('--basefont',v+'px');document.body.style.fontSize=v+'px';localStorage.setItem('nihFont',v)}
-function clearSaved(){localStorage.clear();location.reload()}
-function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-
-function formatGregorian(){
- const d=new Date();
- document.getElementById('gregDate').textContent=d.toLocaleDateString('ur-PK',{year:'numeric',month:'long',day:'numeric'});
- document.getElementById('convDate').value=d.toISOString().slice(0,10);
-}
-
-async function api(url, timeout=15000){
- const controller=new AbortController();
- const timer=setTimeout(()=>controller.abort(),timeout);
- try{
-  const r=await fetch(url,{signal:controller.signal,cache:'no-store'});
-  if(!r.ok) throw new Error('HTTP '+r.status);
-  const data=await r.json();
-  if(data && data.status && data.status!=='OK') throw new Error(data.status);
-  return data;
- }catch(e){
-  if(e.name==='AbortError') throw new Error('وقت ختم ہوگیا');
-  throw e;
- }finally{clearTimeout(timer);}
-}
-
-async function loadHijriToday(){
- try{
-  const d=new Date();
-  const j=String(d.getDate()).padStart(2,'0')+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+d.getFullYear();
-  const x=await api(`${AAPI}/gToH?date=${j}`);
-  const h=x.data.hijri;
-  document.getElementById('hijriDate').textContent=`${h.day} ${h.month.ar} ${h.year} ھ`;
- }catch(e){document.getElementById('hijriDate').textContent='ہجری تاریخ دستیاب نہیں؛ دوبارہ کوشش کریں۔'}
-}
-
-async function loadDailyAyah(){
- try{
-  const n=Math.floor(Math.random()*6236)+1;
-  const x=await api(`${QAPI}/ayah/${n}/editions/quran-uthmani,ur.jalandhry`);
-  const a=x.data[0], u=x.data[1];
-  document.getElementById('dailyAyah').textContent=a.text;
-  document.getElementById('dailyAyahRef').textContent=`${a.surah.name} — آیت ${a.numberInSurah}`;
- }catch(e){document.getElementById('dailyAyah').textContent='آیت حاصل نہیں ہو سکی۔'}
-}
-
-async function loadSurahs(){
- try{
-  const x=await api(`${QAPI}/surah`);
-  const sel=document.getElementById('surahSelect');
-  sel.innerHTML=x.data.map(s=>`<option value="${s.number}">${s.number}. ${esc(s.name)} — ${esc(s.englishName)}</option>`).join('');
-  await loadSurah(1);
- }catch(e){document.getElementById('quranStatus').textContent='قرآن کا ڈیٹا ابھی نہیں آیا۔ براہ کرم چند سیکنڈ بعد دوبارہ کوشش کریں۔'}
-}
-
-async function loadSurah(n){
- if(!n)return;
- document.getElementById('quranStatus').textContent='سورت لوڈ ہو رہی ہے...';
- document.getElementById('searchResults').innerHTML='';
- try{
-  const x=await api(`${QAPI}/surah/${n}/editions/quran-uthmani,ur.jalandhry,en.sahih`);
-  const ar=x.data[0], ur=x.data[1], en=x.data[2];
-  document.getElementById('surahInfo').innerHTML=`<div class="card center"><h2>${esc(ar.name)}</h2><p>${esc(ar.englishName)} — ${esc(ar.numberOfAyahs)} آیات</p></div>`;
-  document.getElementById('ayahList').innerHTML=ar.ayahs.map((a,i)=>{
-   const ut=ur.ayahs[i]?.text||'', et=en.ayahs[i]?.text||'';
-   return `<article class="ayah"><div class="arabic"><span class="ayah-no">${a.numberInSurah}</span>${esc(a.text)}</div><div class="translation">${esc(ut)}</div><div class="translation" dir="ltr">${esc(et)}</div><div class="action-row"><button class="secondary" onclick="shareText(${JSON.stringify(a.text+'\\n'+ut+'\\n('+ar.englishName+' '+a.numberInSurah+')')})">📤 شیئر</button></div></article>`;
-  }).join('');
-  document.getElementById('quranStatus').textContent='مکمل سورت لوڈ ہو گئی۔';
- }catch(e){document.getElementById('quranStatus').textContent='سورت لوڈ نہیں ہو سکی۔ انٹرنیٹ/API دستیاب نہ ہو تو دوبارہ کوشش کریں۔'}
-}
-
-async function searchQuran(){
- const q=document.getElementById('quranSearch').value.trim();
- if(!q)return;
- document.getElementById('quranStatus').textContent='تلاش جاری ہے...';
- try{
-  const x=await api(`${QAPI}/search/${encodeURIComponent(q)}/all/quran-uthmani`);
-  const hits=x.data.matches||[];
-  document.getElementById('searchResults').innerHTML=`<div class="card"><h3>🔎 تلاش کے نتائج: ${esc(q)}</h3>${hits.slice(0,30).map(h=>`<div class="ayah"><div class="muted">${esc(h.surah.name)} — آیت ${h.numberInSurah}</div><div class="arabic">${esc(h.text)}</div></div>`).join('')}</div>`;
-  document.getElementById('quranStatus').textContent=`${hits.length} نتائج ملے۔`;
- }catch(e){document.getElementById('quranStatus').textContent='تلاش ناکام ہوگئی۔'}
-}
-
-async function loadPrayer(){
- const city=document.getElementById('city').value.trim(), country=document.getElementById('country').value.trim(), method=document.getElementById('method').value;
- if(!city||!country)return;
- document.getElementById('locationStatus').textContent='نماز کے اوقات حاصل ہو رہے ہیں...';
- try{
-  const x=await api(`${AAPI}/timingsByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=${method}`);
-  const d=x.data;
-  document.getElementById('prayerDate').innerHTML=`<b>${esc(d.date.readable)}</b> — ${esc(d.date.hijri.day)} ${esc(d.date.hijri.month.ar)} ${esc(d.date.hijri.year)} ھ`;
-  const names=[['Fajr','فجر'],['Sunrise','طلوع آفتاب'],['Dhuhr','ظہر'],['Asr','عصر'],['Maghrib','مغرب'],['Isha','عشاء']];
-  document.getElementById('prayerGrid').innerHTML=names.map(([k,n])=>`<div class="prayer"><span>${n}</span><strong>${esc(d.timings[k])}</strong></div>`).join('');
-  document.getElementById('homePrayer').innerHTML=names.map(([k,n])=>`<span style="display:inline-block;margin:4px 7px"><b>${n}</b> ${esc(d.timings[k])}</span>`).join('');
-  document.getElementById('locationStatus').textContent=`مقام: ${city}, ${country}`;
- }catch(e){document.getElementById('locationStatus').textContent='اوقات نہیں مل سکے۔ شہر/ملک درست لکھیں۔'}
-}
-function useMyLocation(forQibla=false){
+async function useMyLocation(forQibla=false){
   if(!navigator.geolocation){
     alert('آپ کے براؤزر میں Location support دستیاب نہیں۔');
     return;
   }
 
+  document.getElementById('locationStatus').textContent='آپ کی موجودہ جگہ حاصل کی جا رہی ہے...';
+
   navigator.geolocation.getCurrentPosition(
-    function(p){
-      currentLat = p.coords.latitude;
-      currentLon = p.coords.longitude;
+    async p=>{
+      currentLat=p.coords.latitude;
+      currentLon=p.coords.longitude;
 
-      const q = calcQibla(currentLat, currentLon);
+      const q=calcQibla(currentLat,currentLon);
 
-      document.getElementById('qiblaDegree').textContent =
-        `قبلہ: ${q.toFixed(1)}° true north سے`;
+      document.getElementById('qiblaDegree').textContent=`قبلہ: ${q.toFixed(1)}°`;
+      document.getElementById('qiblaArrow').style.transform=`rotate(${q}deg)`;
+      document.getElementById('qiblaText').textContent=`مکہ مکرمہ کی سمت: ${q.toFixed(1)}° true north سے`;
 
-      document.getElementById('qiblaArrow').style.transform =
-        `rotate(${q}deg)`;
-
-      document.getElementById('qiblaText').textContent =
-        'یہ آپ کے مقام سے خانہ کعبہ کی ابتدائی سمت (bearing) ہے۔';
+      document.getElementById('locationStatus').textContent=
+        `آپ کی موجودہ جگہ حاصل ہوگئی۔ Latitude: ${currentLat.toFixed(4)}, Longitude: ${currentLon.toFixed(4)}`;
 
       if(forQibla){
         show('qibla');
+      }else{
+        try{
+          const x=await api(
+            `${AAPI}/timings/${Math.round(new Date().getTime()/1000)}?latitude=${currentLat}&longitude=${currentLon}&method=1`
+          );
+
+          const d=x.data;
+          const names=[
+            ['Fajr','فجر'],
+            ['Sunrise','طلوع آفتاب'],
+            ['Dhuhr','ظہر'],
+            ['Asr','عصر'],
+            ['Maghrib','مغرب'],
+            ['Isha','عشاء']
+          ];
+
+          document.getElementById('prayerDate').innerHTML=
+            `<b>${esc(d.date.readable)}</b> — ${esc(d.date.hijri.day)} ${esc(d.date.hijri.month.ar)} ${esc(d.date.hijri.year)} ھ`;
+
+          document.getElementById('prayerGrid').innerHTML=
+            names.map(([k,n])=>
+              `<div class="prayer"><span>${n}</span><strong>${esc(d.timings[k])}</strong></div>`
+            ).join('');
+
+          document.getElementById('homePrayer').innerHTML=
+            names.map(([k,n])=>
+              `<span style="display:inline-block;margin:4px 7px"><b>${n}</b> ${esc(d.timings[k])}</span>`
+            ).join('');
+
+        }catch(e){
+          document.getElementById('locationStatus').textContent=
+            'مقام مل گیا لیکن نماز کے اوقات حاصل نہیں ہو سکے۔';
+        }
       }
-
-      document.getElementById('locationStatus').textContent =
-        'آپ کی جگہ حاصل ہوگئی۔ قبلہ کی سمت معلوم کر دی گئی ہے۔';
     },
-
-    function(error){
-      alert('Location کی اجازت نہیں ملی۔ براہِ کرم Location کی اجازت دیں۔');
-      document.getElementById('locationStatus').textContent =
-        'Location کی اجازت درکار ہے۔';
+    e=>{
+      document.getElementById('locationStatus').textContent=
+        'Location کی اجازت نہیں ملی۔ براہ کرم Browser میں Location اجازت دیں۔';
+      alert('Location کی اجازت دیں، پھر دوبارہ کوشش کریں۔');
     },
-
     {
       enableHighAccuracy:true,
       timeout:15000,
-      maximumAge:60000
+      maximumAge:300000
     }
   );
 }
-func
- const φ1=lat*Math.PI/180, φ2=KAABA.lat*Math.PI/180, dl=(KAABA.lon-lon)*Math.PI/180;
- const y=Math.sin(dl), x=Math.cos(φ1)*Math.tan(φ2)-Math.sin(φ1)*Math.cos(dl);
- return (Math.atan2(y,x)*180/Math.PI+360)%360;
+
+function calcQibla(lat,lon){
+  const p1=lat*Math.PI/180;
+  const p2=KAABA.lat*Math.PI/180;
+  const dl=(KAABA.lon-lon)*Math.PI/180;
+
+  const y=Math.sin(dl);
+  const x=
+    Math.cos(p1)*Math.tan(p2)-
+    Math.sin(p1)*Math.cos(dl);
+
+  let bearing=Math.atan2(y,x)*180/Math.PI;
+
+  return (bearing+360)%360;
 }
 
 async function convertDate(){
- const v=document.getElementById('convDate').value;if(!v)return;
- const [y,m,d]=v.split('-'); const dd=`${d}-${m}-${y}`;
- try{const x=await api(`${AAPI}/gToH?date=${dd}`);const h=x.data.hijri;document.getElementById('convertedDate').innerHTML=`<b>${dd}</b><br>🌙 ${h.day} ${h.month.ar} ${h.year} ھ`;}
- catch(e){document.getElementById('convertedDate').textContent='تبدیلی دستیاب نہیں۔'}
+  const v=document.getElementById('convDate').value;
+  if(!v)return;
+
+  const parts=v.split('-');
+  const y=parts[0];
+  const m=parts[1];
+  const d=parts[2];
+
+  document.getElementById('convertedDate').textContent=
+    'تاریخ تبدیل ہو رہی ہے...';
+
+  try{
+    const x=await api(`${AAPI}/gToH?date=${d}-${m}-${y}`);
+    const h=x.data.hijri;
+
+    document.getElementById('convertedDate').innerHTML=
+      `<b>${esc(d)}-${esc(m)}-${esc(y)}</b><br>
+       🌙 ${esc(h.day)} ${esc(h.month.ar)} ${esc(h.year)} ھ`;
+  }catch(e){
+    document.getElementById('convertedDate').textContent=
+      'تاریخ تبدیل نہیں ہو سکی۔';
+  }
 }
 
 async function loadRamadan(){
- const city=document.getElementById('ramadanCity').value.trim(), country=document.getElementById('ramadanCountry').value.trim(), year=document.getElementById('ramadanYear').value;
- if(!city||!country||!year)return;
- document.getElementById('ramadanSummary').textContent='رمضان کیلنڈر حاصل ہو رہا ہے...';
- try{
-  const x=await api(`${AAPI}/hijriCalendarByCity/${year}/9?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=1`);
-  const days=x.data||[];
-  document.getElementById('ramadanSummary').textContent=`${city}, ${country} — رمضان ${year} ھ`;
-  document.getElementById('ramadanTable').innerHTML=`<table><thead><tr><th>رمضان</th><th>تاریخ</th><th>سحری/Imsak</th><th>فجر</th><th>مغرب</th><th>عشاء</th></tr></thead><tbody>${days.map(d=>`<tr><td>${d.date.hijri.day}</td><td>${d.date.gregorian.date}</td><td>${d.timings.Imsak}</td><td>${d.timings.Fajr}</td><td>${d.timings.Maghrib}</td><td>${d.timings.Isha}</td></tr>`).join('')}</tbody></table>`;
- }catch(e){document.getElementById('ramadanSummary').textContent='رمضان کیلنڈر حاصل نہیں ہو سکا۔'}
+  const city=document.getElementById('ramadanCity').value.trim();
+  const country=document.getElementById('ramadanCountry').value.trim();
+  const year=document.getElementById('ramadanYear').value;
+
+  if(!city||!country||!year)return;
+
+  document.getElementById('ramadanSummary').textContent=
+    'رمضان کیلنڈر حاصل ہو رہا ہے...';
+
+  document.getElementById('ramadanTable').innerHTML=
+    '<p class="center">براہ کرم انتظار کریں...</p>';
+
+  try{
+    const x=await api(
+      `${AAPI}/hijriCalendarByCity/${year}?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=1`
+    );
+
+    const days=x.data||[];
+
+    if(!days.length)throw new Error('No data');
+
+    const rows=days.map(item=>{
+      const g=item.date.gregorian;
+      const h=item.date.hijri;
+      const t=item.timings;
+
+      return `
+        <tr>
+          <td>${esc(h.day)}</td>
+          <td>${esc(h.date)}</td>
+          <td>${esc(g.date)}</td>
+          <td>${esc(t.Fajr)}</td>
+          <td>${esc(t.Maghrib)}</td>
+        </tr>
+      `;
+    }).join('');
+
+    document.getElementById('ramadanSummary').textContent=
+      `${city}, ${country} — ${year} کا رمضان کیلنڈر`;
+
+    document.getElementById('ramadanTable').innerHTML=`
+      <h3>🌙 رمضان کے اوقات</h3>
+      <div style="overflow:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>ہجری دن</th>
+              <th>ہجری تاریخ</th>
+              <th>عیسوی تاریخ</th>
+              <th>سحری ختم</th>
+              <th>افطار</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    `;
+  }catch(e){
+    document.getElementById('ramadanSummary').textContent=
+      'رمضان کا ڈیٹا حاصل نہیں ہو سکا۔';
+
+    document.getElementById('ramadanTable').innerHTML=
+      '<p class="center muted">براہ کرم شہر، ملک اور سال چیک کرکے دوبارہ کوشش کریں۔</p>';
+  }
 }
 
 async function shareText(text){
- if(navigator.share){try{await navigator.share({title:'Noor Islamic Hub',text});return}catch(e){}}
- try{await navigator.clipboard.writeText(text);alert('متن copy ہوگیا۔');}catch(e){alert(text)}
+  try{
+    if(navigator.share){
+      await navigator.share({
+        title:'Noor Islamic Hub',
+        text:text
+      });
+      return;
+    }
+  }catch(e){}
+
+  try{
+    await navigator.clipboard.writeText(text);
+    alert('متن کاپی ہو گیا ہے۔');
+  }catch(e){
+    alert('شیئر یا کاپی نہیں ہو سکی۔');
+  }
 }
 
 document.addEventListener('DOMContentLoaded',async()=>{
- if(localStorage.getItem('nihDark')==='true')document.body.classList.add('dark');
- const f=localStorage.getItem('nihFont');if(f){document.getElementById('fontSize').value=f;setFont(f)}
- formatGregorian();
+  try{
+    if(localStorage.getItem('nihDark')==='true'){
+      document.body.classList.add('dark');
+    }
 
- // API calls are intentionally staggered to avoid triggering free-API rate limits.
- await loadHijriToday();
- await loadDailyAyah();
- await loadSurahs();
- });
- </script>
+    const savedFont=localStorage.getItem('nihFont');
+    if(savedFont){
+      document.getElementById('fontSize').value=savedFont;
+      setFont(savedFont);
+    }
+
+    formatGregorian();
+
+    await loadHijriToday();
+    await loadDailyAyah();
+    await loadSurahs();
+
+    document.getElementById('locationStatus').textContent=
+      'شہر اور ملک درج کرکے "اوقات حاصل کریں" دبائیں۔';
+  }catch(e){
+    console.error(e);
+  }
+});
+</script>
 </body>
 </html>
