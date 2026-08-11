@@ -375,7 +375,39 @@ async function useMyLocation(forQibla=false){
       const q=calcQibla(currentLat,currentLon);
 
       document.getElementById('qiblaDegree').textContent=`قبلہ: ${q.toFixed(1)}°`;
-      document.getElementById('qiblaArrow').style.transform=`rotate(${q}deg)`;
+      let qiblaBearing = q;
+let compassHeading = 0;
+
+function updateQiblaArrow(){
+  const angle = qiblaBearing - compassHeading;
+  document.getElementById('qiblaArrow').style.transform =
+    `rotate(${angle}deg)`;
+}
+
+function handleOrientation(event){
+  let heading;
+
+  if(event.webkitCompassHeading !== undefined){
+    heading = event.webkitCompassHeading;
+  }else if(event.absolute === true && event.alpha !== null){
+    heading = 360 - event.alpha;
+  }else if(event.alpha !== null){
+    heading = 360 - event.alpha;
+  }
+
+  if(heading !== undefined){
+    compassHeading = heading;
+    updateQiblaArrow();
+  }
+}
+
+if(window.DeviceOrientationEvent){
+  window.addEventListener(
+    'deviceorientation',
+    handleOrientation,
+    true
+  );
+}
       document.getElementById('qiblaText').textContent=`مکہ مکرمہ کی سمت: ${q.toFixed(1)}° true north سے`;
 
       document.getElementById('locationStatus').textContent=
