@@ -504,6 +504,7 @@ async function convertDate(){
   }
 }
 async function loadRamadan(){
+
   const city=document.getElementById('ramadanCity').value.trim();
   const country=document.getElementById('ramadanCountry').value.trim();
   const year=document.getElementById('ramadanYear').value;
@@ -514,35 +515,49 @@ async function loadRamadan(){
   }
 
   document.getElementById('ramadanSummary').textContent =
-    'رمضان کیلنڈر حاصل ہو رہا ہے...';
+    '🌙 رمضان کیلنڈر حاصل ہو رہا ہے...';
 
   document.getElementById('ramadanTable').innerHTML =
     '<p class="center">براہ کرم انتظار کریں...</p>';
 
   try{
+
+    /*
+      پورے سال کا نماز کیلنڈر حاصل کریں
+      پھر صرف ہجری مہینہ نمبر 9 یعنی رمضان دکھائیں
+    */
+
     const x=await api(
-      `${AAPI}/hijriCalendarByCity/${year}?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=1`
+      `${AAPI}/calendarByCity/${year}?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=1`
     );
 
-    const days=x.data || [];
+    const months=x.data || [];
 
-    if(!days.length){
-      throw new Error('No Ramadan data');
-    }
+    let ramadanDays=[];
 
-    /* صرف رمضان کے دن دکھائیں */
-    const ramadanDays=days.filter(item =>
-      item.date &&
-      item.date.hijri &&
-      item.date.hijri.month &&
-      Number(item.date.hijri.month.number)===9
-    );
+    months.forEach(month=>{
+      const monthDays=month.data || [];
+
+      monthDays.forEach(item=>{
+
+        if(
+          item.date &&
+          item.date.hijri &&
+          item.date.hijri.month &&
+          Number(item.date.hijri.month.number)===9
+        ){
+          ramadanDays.push(item);
+        }
+
+      });
+    });
 
     if(!ramadanDays.length){
       throw new Error('Ramadan data not found');
     }
 
     const rows=ramadanDays.map(item=>{
+
       const g=item.date.gregorian;
       const h=item.date.hijri;
       const t=item.timings || {};
@@ -559,12 +574,14 @@ async function loadRamadan(){
           <td><b>${esc(maghrib)}</b></td>
         </tr>
       `;
+
     }).join('');
 
-    document.getElementById('ramadanSummary').innerHTML =
+    document.getElementById('ramadanSummary').innerHTML=
       `🌙 ${esc(city)}, ${esc(country)} — ${esc(year)} کا رمضان کیلنڈر`;
 
     document.getElementById('ramadanTable').innerHTML=`
+
       <h3>🌙 رمضان المبارک کے اوقات</h3>
 
       <div class="notice small">
@@ -572,7 +589,9 @@ async function loadRamadan(){
       </div>
 
       <div style="overflow:auto">
+
         <table>
+
           <thead>
             <tr>
               <th>رمضان دن</th>
@@ -586,7 +605,9 @@ async function loadRamadan(){
           <tbody>
             ${rows}
           </tbody>
+
         </table>
+
       </div>
     `;
 
@@ -594,56 +615,83 @@ async function loadRamadan(){
 
     console.error('Ramadan error:',e);
 
-    document.getElementById('ramadanSummary').textContent =
+    document.getElementById('ramadanSummary').textContent=
       'رمضان کا ڈیٹا حاصل نہیں ہو سکا۔';
 
     document.getElementById('ramadanTable').innerHTML=`
+
       <div class="notice">
         رمضان کا ڈیٹا لوڈ نہیں ہو سکا۔
       </div>
 
       <p class="center muted">
-        براہ کرم شہر، ملک اور سال دوبارہ چیک کرکے کوشش کریں۔
+        شہر، ملک اور سال دوبارہ چیک کرکے کوشش کریں۔
       </p>
+
     `;
   }
 }
 
 
-/* 📍 موجودہ مقام سے رمضان کیلنڈر */
+/* 📍 Current Location سے رمضان کیلنڈر */
+
 function loadRamadanFromLocation(){
 
   if(!navigator.geolocation){
+
     alert('آپ کے براؤزر میں Current Location دستیاب نہیں۔');
     return;
+
   }
 
-  document.getElementById('ramadanSummary').textContent =
+  document.getElementById('ramadanSummary').textContent=
     '📍 آپ کی موجودہ جگہ حاصل کی جا رہی ہے...';
 
+  document.getElementById('ramadanTable').innerHTML=
+    '<p class="center">براہ کرم Location کی اجازت دیں...</p>';
+
   navigator.geolocation.getCurrentPosition(
-    async position => {
+
+    async position=>{
 
       const lat=position.coords.latitude;
       const lon=position.coords.longitude;
+      const year=document.getElementById('ramadanYear').value;
 
       try{
 
-        /* موجودہ مقام کے مطابق رمضان کیلنڈر */
-        const year=document.getElementById('ramadanYear').value;
+        /*
+          Current Location کے مطابق پورے سال کا calendar
+        */
 
         const x=await api(
-          `${AAPI}/hijriCalendar/${year}?latitude=${lat}&longitude=${lon}&method=1`
+          `${AAPI}/calendar/${year}?latitude=${lat}&longitude=${lon}&method=1`
         );
 
-        const days=x.data || [];
+        const months=x.data || [];
 
-        const ramadanDays=days.filter(item =>
-          item.date &&
-          item.date.hijri &&
-          item.date.hijri.month &&
-          Number(item.date.hijri.month.number)===9
-        );
+        let ramadanDays=[];
+
+        months.forEach(month=>{
+
+          const monthDays=month.data || [];
+
+          monthDays.forEach(item=>{
+
+            if(
+              item.date &&
+              item.date.hijri &&
+              item.date.hijri.month &&
+              Number(item.date.hijri.month.number)===9
+            ){
+
+              ramadanDays.push(item);
+
+            }
+
+          });
+
+        });
 
         if(!ramadanDays.length){
           throw new Error('Ramadan data not found');
@@ -667,20 +715,24 @@ function loadRamadanFromLocation(){
               <td><b>${esc(maghrib)}</b></td>
             </tr>
           `;
+
         }).join('');
 
-        document.getElementById('ramadanSummary').innerHTML =
-          `📍 موجودہ مقام کے مطابق ${esc(year)} کا رمضان کیلنڈر`;
+        document.getElementById('ramadanSummary').innerHTML=
+          `📍 Current Location کے مطابق ${esc(year)} کا رمضان کیلنڈر`;
 
         document.getElementById('ramadanTable').innerHTML=`
+
           <h3>🌙 رمضان المبارک کے اوقات</h3>
 
           <div class="notice small">
-            📍 Current Location استعمال کی گئی ہے۔
+            📍 آپ کی موجودہ جگہ کے مطابق اوقات حاصل کیے گئے ہیں۔
           </div>
 
           <div style="overflow:auto">
+
             <table>
+
               <thead>
                 <tr>
                   <th>رمضان دن</th>
@@ -694,7 +746,9 @@ function loadRamadanFromLocation(){
               <tbody>
                 ${rows}
               </tbody>
+
             </table>
+
           </div>
         `;
 
@@ -702,21 +756,24 @@ function loadRamadanFromLocation(){
 
         console.error('Location Ramadan error:',e);
 
-        document.getElementById('ramadanSummary').textContent =
+        document.getElementById('ramadanSummary').textContent=
           'Current Location سے رمضان ڈیٹا حاصل نہیں ہو سکا۔';
 
         document.getElementById('ramadanTable').innerHTML=
           '<p class="center muted">براہ کرم دوبارہ کوشش کریں۔</p>';
+
       }
+
     },
 
-    error => {
+    error=>{
 
-      document.getElementById('ramadanSummary').textContent =
+      document.getElementById('ramadanSummary').textContent=
         '📍 Current Location حاصل نہیں ہو سکی۔';
 
       document.getElementById('ramadanTable').innerHTML=
-        '<p class="center muted">براہ کرم Location کی اجازت دیں اور دوبارہ کوشش کریں۔</p>';
+        '<p class="center muted">Location کی اجازت دیں اور دوبارہ کوشش کریں۔</p>';
+
     },
 
     {
@@ -724,9 +781,9 @@ function loadRamadanFromLocation(){
       timeout:15000,
       maximumAge:300000
     }
+
   );
   }
-
 async function shareText(text){
   try{
     if(navigator.share){
